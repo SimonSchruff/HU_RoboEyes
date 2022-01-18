@@ -9,6 +9,8 @@ public class FollowSequenceArrow : MonoBehaviour
     [Header("Variables")]
     public float TimeToMoveToSquare; 
     public float TimeToRecover; 
+    public bool IsLeftArrow; 
+    public bool NextSequenceRdy = true; 
 
 
     [Header("References")]
@@ -18,38 +20,32 @@ public class FollowSequenceArrow : MonoBehaviour
 
 
     private SpriteRenderer m_sp; 
-    private bool m_nextSequence = true; 
-    private int m_currentSquare = 0; 
+    private int m_currentSquare = 0;
+    private Vector3 m_ArrowPosOffset;  
+    private Vector3 m_targetPos; 
+
+    // TO-DO: 
+    // - Create Dictionary for Angles so it does not have to be calculated twice
 
     void Start()
     {
         m_sp = GetComponentInChildren<SpriteRenderer>(); 
         m_sp.sprite = ArrowInactiveSprite; 
 
-        DebugText.text = null; 
-        CalculateDirVector(); 
+        //DebugText.text = null; 
+        
     }
 
     void Update()
     {
-        if(m_currentSquare >= GameManager.instance.Squares.Count && m_nextSequence)
-        {
-            GameManager.instance.LoadSceneByName("Menu"); 
-            return; 
-        }
-
-        if(m_nextSequence)
-        {
-            StartCoroutine(Sequence(GameManager.instance.Squares[m_currentSquare])); 
-            m_currentSquare++;  
-        }
+       
     }
 
-    private IEnumerator Sequence(int square)
+    public IEnumerator Sequence(GameManager.Square square)
     {
-        m_nextSequence = false; 
+        //NextSequenceRdy = false; 
         m_sp.sprite = ArrowSprite;  
-        DebugText.text = ("Robo Arm is moving towards square " + square); 
+        //DebugText.text = ("Robo Arm is moving towards square " + square.gameObject.name); 
 
         //Get direction towards arrow
         //GameManager.instance.SquarePositions.TryGetValue(square, out Vector3 squarePos) ; 
@@ -57,19 +53,19 @@ public class FollowSequenceArrow : MonoBehaviour
 
         //Rotate Arrow in that direction
         //float angle = Vector2.SignedAngle(Vector2.right, direction); 
-        float angle = transform.rotation.eulerAngles.z - CalculateDirVector(); 
+        float angle = CalculateAngle(square); 
         transform.eulerAngles = new Vector3(0,0,angle); 
         
-        yield return new WaitForSeconds(TimeToMoveToSquare);
+        yield return new WaitForSeconds(GameManager.instance.TimeToMoveToSquare);
 
         // Robo has reached square
         transform.eulerAngles = Vector3.zero; 
         m_sp.sprite = ArrowInactiveSprite;  
-        DebugText.text = ("Robo Arm is moving to default position"); 
+        //DebugText.text = ("Robo Arm is moving to default position"); 
 
-        yield return new WaitForSeconds(TimeToRecover); 
+        //yield return new WaitForSeconds(GameManager.instance.TimeToRecover); 
 
-        m_nextSequence = true; 
+        //NextSequenceRdy = true; 
     }
 
     private float CalculateDirVector()
@@ -85,10 +81,28 @@ public class FollowSequenceArrow : MonoBehaviour
         print(angle); 
 
         return angle; 
-
-
-
-
-        
     }
+
+    private float CalculateAngle(GameManager.Square square)
+    {
+        Vector3 targetVector = new Vector3(square.transform.position.x - transform.position.x, square.transform.position.y - transform.position.y, 0);
+        
+
+        float angle = Vector3.Angle(Vector3.down, targetVector); 
+        print("Target Square: " + square.ID + "; Target Vector: " + targetVector + "; Angle: " + angle); 
+
+        if(square.ID == 0 || square.ID == 3)
+            angle = -angle; 
+        
+        if(!IsLeftArrow)
+        {
+            if(square.ID == 1 || square.ID == 4)
+                angle = -angle; 
+        }
+
+        return angle; 
+
+
+    }
+
 }

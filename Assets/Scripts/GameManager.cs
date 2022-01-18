@@ -2,35 +2,85 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement; 
+using System; 
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance; 
-    public List<int> Squares = new List<int>(5); 
-    public Dictionary<int, Vector3> SquarePositions = new Dictionary<int, Vector3>(); 
+    public int CurrentSquare = 0; 
+    public List<int> Sequence = new List<int>(5); 
+    public FollowSequenceArrow[] Arrows = new FollowSequenceArrow[2]; 
+
+    [Serializable]
+    public struct Square
+    {
+        public int ID; 
+        public Transform transform; 
+    }
+    public Square[] Squares = new Square[6]; 
+   
+
+
+    [Header("Time Variables")]
+    public float TimeToMoveToSquare = 4f; 
+    public float TimeToRecover = 2f; 
+    private float m_timer; 
+
+    
+    [Header("Position Variables")]
+    public float Height = 70f; // In centemeters
+    public float DistanceToTable = 30f; 
+    public float DistanceToFirstRow = 17f; 
+    public float DistanceToSecondRow = 60f; 
+    public float XDistanceBetweenSquares = 32f; 
+    public float ZDistanceBetweenSquares = 43f; 
+    public float TabletSizeX = 25.5f; 
+    public float TabletSizeY = 16f; 
+
+
 
     void Awake()
     {
         if(instance != null)
             Destroy(this); 
         else
-            instance = this; 
+            instance = this;         
+    }
 
-        if(SceneManager.GetActiveScene().name == "ArrowSequence")
+    private void Start() 
+    {
+        
+    }
+
+    private void Update()
+    {
+        m_timer += Time.deltaTime; 
+
+        //Gives Square Transform to each Arrow in scene
+        if(m_timer >= (TimeToMoveToSquare + TimeToRecover))
         {
-            SquarePositions.Add(1, new Vector3(-9,-20,0)); 
-            SquarePositions.Add(2, new Vector3(0,-20,0)); 
-            SquarePositions.Add(3, new Vector3(9,-20,0)); 
+            if(CurrentSquare >= Squares.Length)
+            {
+                GameOver(); 
+                return; 
+            }
 
-            Squares[0] = 2; 
-            Squares[1] = 1; 
-            Squares[2] = 3; 
-            Squares[3] = 2; 
-            Squares[4] = 3; 
+            foreach(FollowSequenceArrow arrow in Arrows)
+            {
+                if(arrow == null)
+                    return; 
+                int squareToShow = Sequence[CurrentSquare]; 
+                arrow.StartCoroutine(arrow.Sequence(Squares[squareToShow])); 
+            }
+            m_timer = 0; 
+            CurrentSquare++;  
         }
 
+    }
 
-        
+    public void GameOver()
+    {
+        print("GAME OVER!!"); 
     }
 
     public void LoadSceneByName(string name)
