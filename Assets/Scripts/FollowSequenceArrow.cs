@@ -68,24 +68,9 @@ public class FollowSequenceArrow : MonoBehaviour
         //NextSequenceRdy = true; 
     }
 
-    private float CalculateDirVector()
-    {
-        float y = 60; 
-        float x = 30 ; 
-        float z = 20; 
-
-        float c = Mathf.Sqrt((x*x) + (z * z)); 
-        print("c = " + c); 
-
-        float angle = Mathf.Asin( x/c ) * Mathf.Rad2Deg ; 
-        print(angle); 
-
-        return angle; 
-    }
-
     private float CalculateAngle(GameManager.Square square)
     {
-        Vector3 targetVector = new Vector3(square.transform.position.x - transform.position.x, square.transform.position.y - transform.position.y, 0);
+        Vector3 targetVector = new Vector3(square.transform.position.x - transform.position.x, square.transform.position.y - transform.position.y, square.transform.position.z - transform.position.z);
         
 
         float angle = Vector3.Angle(Vector3.down, targetVector); 

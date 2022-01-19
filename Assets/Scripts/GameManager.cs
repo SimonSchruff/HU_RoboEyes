@@ -8,6 +8,11 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance; 
     public int CurrentSquare = 0; 
+
+    [Header("Time Variables")]
+    public float TimeToMoveToSquare = 4f; 
+    public float TimeToRecover = 2f; 
+    private float m_timer; 
     public List<int> Sequence = new List<int>(5); 
     public FollowSequenceArrow[] Arrows = new FollowSequenceArrow[2]; 
 
@@ -19,14 +24,6 @@ public class GameManager : MonoBehaviour
     }
     public Square[] Squares = new Square[6]; 
    
-
-
-    [Header("Time Variables")]
-    public float TimeToMoveToSquare = 4f; 
-    public float TimeToRecover = 2f; 
-    private float m_timer; 
-
-    
     [Header("Position Variables")]
     public float Height = 70f; // In centemeters
     public float DistanceToTable = 30f; 
@@ -36,8 +33,6 @@ public class GameManager : MonoBehaviour
     public float ZDistanceBetweenSquares = 43f; 
     public float TabletSizeX = 25.5f; 
     public float TabletSizeY = 16f; 
-
-
 
     void Awake()
     {
@@ -59,7 +54,7 @@ public class GameManager : MonoBehaviour
         //Gives Square Transform to each Arrow in scene
         if(m_timer >= (TimeToMoveToSquare + TimeToRecover))
         {
-            if(CurrentSquare >= Squares.Length)
+            if(CurrentSquare >= Sequence.Count)
             {
                 GameOver(); 
                 return; 
@@ -75,7 +70,6 @@ public class GameManager : MonoBehaviour
             m_timer = 0; 
             CurrentSquare++;  
         }
-
     }
 
     public void GameOver()
