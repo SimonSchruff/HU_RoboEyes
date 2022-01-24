@@ -6,6 +6,7 @@ using System;
 
 public class GameManager : MonoBehaviour
 {
+    public bool isArrowScene; 
     public static GameManager instance; 
     public int CurrentSquare = 0; 
 
@@ -15,6 +16,7 @@ public class GameManager : MonoBehaviour
     private float m_timer; 
     public List<int> Sequence = new List<int>(5); 
     public FollowSequenceArrow[] Arrows = new FollowSequenceArrow[2]; 
+    public FollowSequenceEyes[] Eyes = new FollowSequenceEyes[2]; 
 
     [Serializable]
     public struct Square
@@ -60,12 +62,26 @@ public class GameManager : MonoBehaviour
                 return; 
             }
 
-            foreach(FollowSequenceArrow arrow in Arrows)
+            if(isArrowScene)
             {
-                if(arrow == null)
-                    return; 
-                int squareToShow = Sequence[CurrentSquare]; 
-                arrow.StartCoroutine(arrow.Sequence(Squares[squareToShow])); 
+                foreach(FollowSequenceArrow arrow in Arrows)
+                {
+                    if(arrow == null)
+                        return; 
+                    int squareToShow = Sequence[CurrentSquare]; 
+                    arrow.StartCoroutine(arrow.Sequence(Squares[squareToShow])); 
+                }
+            }
+            else if(!isArrowScene)
+            {
+                //Reference to eyes
+                foreach (FollowSequenceEyes eye in Eyes)
+                {
+                    if(eye == null)
+                        return; 
+                    int squareToShow = Sequence[CurrentSquare]; 
+                    eye.StartCoroutine(eye.Sequence(Squares[squareToShow])); 
+                }
             }
             m_timer = 0; 
             CurrentSquare++;  
