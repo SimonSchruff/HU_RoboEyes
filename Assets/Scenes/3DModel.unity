@@ -306,7 +306,7 @@ GameObject:
   - component: {fileID: 223472627}
   - component: {fileID: 223472626}
   m_Layer: 0
-  m_Name: Sqaure1
+  m_Name: Sqaure0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -382,7 +382,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 223472625}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.2, y: 0.05, z: 2.15}
+  m_LocalPosition: {x: -3.2, y: 2, z: 2.15}
   m_LocalScale: {x: 1, y: 0.01, z: 1}
   m_Children: []
   m_Father: {fileID: 1606793}
@@ -401,7 +401,7 @@ GameObject:
   - component: {fileID: 278311904}
   - component: {fileID: 278311903}
   m_Layer: 0
-  m_Name: Sqaure6
+  m_Name: Sqaure5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -477,7 +477,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 278311902}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.2, y: 0.05, z: -2.15}
+  m_LocalPosition: {x: 3.2, y: -4, z: -2.15}
   m_LocalScale: {x: 1, y: 0.01, z: 1}
   m_Children: []
   m_Father: {fileID: 1606793}
@@ -1085,7 +1085,7 @@ GameObject:
   - component: {fileID: 542236095}
   - component: {fileID: 542236094}
   m_Layer: 0
-  m_Name: Sqaure4
+  m_Name: Sqaure3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1161,7 +1161,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 542236093}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.2, y: 0.05, z: -2.15}
+  m_LocalPosition: {x: -3.2, y: -4, z: -2.15}
   m_LocalScale: {x: 1, y: 0.01, z: 1}
   m_Children: []
   m_Father: {fileID: 1606793}
@@ -1380,7 +1380,7 @@ GameObject:
   - component: {fileID: 632248959}
   - component: {fileID: 632248958}
   m_Layer: 0
-  m_Name: Sqaure5
+  m_Name: Sqaure4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1456,7 +1456,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 632248957}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.05, z: -2.15}
+  m_LocalPosition: {x: 0, y: -4, z: -2.15}
   m_LocalScale: {x: 1, y: 0.01, z: 1}
   m_Children: []
   m_Father: {fileID: 1606793}
@@ -1475,7 +1475,7 @@ GameObject:
   - component: {fileID: 786797395}
   - component: {fileID: 786797394}
   m_Layer: 0
-  m_Name: Sqaure2
+  m_Name: Sqaure1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1551,7 +1551,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 786797393}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.05, z: 2.15}
+  m_LocalPosition: {x: 0, y: 2, z: 2.15}
   m_LocalScale: {x: 1, y: 0.01, z: 1}
   m_Children: []
   m_Father: {fileID: 1606793}
@@ -1600,6 +1600,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bc549caafc4843ae9be40c05269b0af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isArrowScene: 1
   CurrentSquare: 0
   TimeToMoveToSquare: 4
   TimeToRecover: 2
@@ -1607,6 +1608,9 @@ MonoBehaviour:
   Arrows:
   - {fileID: 1130631801}
   - {fileID: 1916457409}
+  Eyes:
+  - {fileID: 0}
+  - {fileID: 0}
   Squares:
   - ID: 0
     transform: {fileID: 223472629}
@@ -1943,13 +1947,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1191953062}
-  m_LocalRotation: {x: 0.16236687, y: -0, z: -0, w: 0.9867305}
-  m_LocalPosition: {x: 0, y: 6.99, z: -9.55}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 6.99, z: 3.72}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 18.689, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1210280580
 GameObject:
   m_ObjectHideFlags: 0
@@ -1963,12 +1967,12 @@ GameObject:
   - component: {fileID: 1210280582}
   - component: {fileID: 1210280581}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: Screen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &1210280581
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2140,7 +2144,7 @@ GameObject:
   - component: {fileID: 1863249352}
   - component: {fileID: 1863249351}
   m_Layer: 0
-  m_Name: Sqaure3
+  m_Name: Sqaure2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2216,7 +2220,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1863249350}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.2, y: 0.05, z: 2.15}
+  m_LocalPosition: {x: 3.2, y: 2, z: 2.15}
   m_LocalScale: {x: 1, y: 0.01, z: 1}
   m_Children: []
   m_Father: {fileID: 1606793}

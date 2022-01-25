@@ -31,6 +31,7 @@ public class FollowSequenceEyes : MonoBehaviour
 
         //DebugText.text = null; 
         
+        
     }
 
     void Update()
