@@ -1509,6 +1509,7 @@ GameObject:
   m_Component:
   - component: {fileID: 850818718}
   - component: {fileID: 850818719}
+  - component: {fileID: 850818720}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1546,7 +1547,7 @@ MonoBehaviour:
   CurrentSquare: 0
   TimeToMoveToSquare: 4
   TimeToRecover: 2
-  Sequence: 000000000100000002000000030000000400000005000000
+  Sequence: 000000000300000001000000040000000200000005000000
   Arrows:
   - {fileID: 0}
   - {fileID: 0}
@@ -1566,14 +1567,19 @@ MonoBehaviour:
     transform: {fileID: 632248961}
   - ID: 5
     transform: {fileID: 278311906}
-  Height: 70
-  DistanceToTable: 30
-  DistanceToFirstRow: 17
-  DistanceToSecondRow: 60
-  XDistanceBetweenSquares: 32
-  ZDistanceBetweenSquares: 43
-  TabletSizeX: 25.5
-  TabletSizeY: 16
+--- !u!114 &850818720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 850818717}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8f3c0acd952c401e9cdf1d6af6b7c37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  settingsJSON: {fileID: 4900000, guid: 68ec46af07e7641118b219f57fb71f59, type: 3}
 --- !u!1 &913160840 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 304bfad6c799441d1969d8e33dcffaea, type: 3}
@@ -1822,7 +1828,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.1792453, g: 0.1792453, b: 0.1792453, a: 0}
+  m_BackGroundColor: {r: 1, g: 1, b: 1, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0

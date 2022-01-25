@@ -1,0 +1,14 @@
+{
+    "posVars": [
+        {
+            "Height": 70.0,
+            "DistanceToTable": 30.0,
+            "DistanceToFirstRow": 17.0,
+            "DistanceToSecondRow": 60.0,
+            "XDistanceBetweenSquares": 32.0,
+            "ZDistanceBetweenSquares": 43.0,
+            "TabletSizeX": 25.5,
+            "TabletSizeY": 16.0
+        }
+    ]
+}

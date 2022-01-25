@@ -25,21 +25,13 @@ public class GameManager : MonoBehaviour
         public Transform transform; 
     }
     public Square[] Squares = new Square[6]; 
-   
-    [Header("Position Variables")]
-    public float Height = 70f; // In centemeters
-    public float DistanceToTable = 30f; 
-    public float DistanceToFirstRow = 17f; 
-    public float DistanceToSecondRow = 60f; 
-    public float XDistanceBetweenSquares = 32f; 
-    public float ZDistanceBetweenSquares = 43f; 
-    public float TabletSizeX = 25.5f; 
-    public float TabletSizeY = 16f; 
+
+    
 
     void Awake()
     {
         if(instance != null)
-            Destroy(this); 
+            Destroy(this);  
         else
             instance = this;         
     }

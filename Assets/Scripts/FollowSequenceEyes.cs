@@ -44,6 +44,9 @@ public class FollowSequenceEyes : MonoBehaviour
         
 
         transform.LookAt(square.transform.position); 
+        Vector3 currentRot = transform.eulerAngles; // Use this Vector3 to customize Rotation if needed
+        print(currentRot); 
+        
         // Workaround for shitty texture        
         yield return new WaitForSeconds(GameManager.instance.TimeToMoveToSquare);
 
@@ -77,5 +80,6 @@ public class FollowSequenceEyes : MonoBehaviour
 
 
     }
+
 
 }
