@@ -61,7 +61,7 @@ public class FollowSequenceArrow : MonoBehaviour
 
     private float CalculateAngle(GameManager.Square square)
     {
-        Vector3 targetVector = new Vector3(square.transform.position.x - transform.position.x, square.transform.position.y - transform.position.y, square.transform.position.z - transform.position.z);
+        Vector3 targetVector = new Vector3(square.transform.position.x - transform.position.x, square.transform.position.y - transform.position.y, 0);
         
 
         float angle = Vector3.Angle(Vector3.down, targetVector); 

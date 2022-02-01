@@ -7,11 +7,13 @@ using System;
 public class FollowSequenceEyes : MonoBehaviour
 {
     [Header("Variables")]
+    public float slerpSpeed = 1f; 
     public bool IsLeftEye; 
     public bool NextSequenceRdy = true; 
 
     [SerializeField]
     private Vector3 m_initRot; 
+    private Vector3 m_playerPos = new Vector3(0,7f,-50f); 
 
     // TO-DO: 
     // - Create Dictionary for Angles so it does not have to be calculated twice
@@ -27,60 +29,43 @@ public class FollowSequenceEyes : MonoBehaviour
 
     public IEnumerator Sequence(GameManager.Square square)
     {
+        StartCoroutine(SmoothLookAt(square.transform.position)); 
         
-        transform.LookAt(square.transform.position); 
-        Vector3 targetRot = transform.eulerAngles; 
-        //transform.eulerAngles = m_initRot; 
-        
-        
-        //Quaternion.Lerp(transform.rotation, Quaternion.Euler(targetRot), .001f); 
-        print("Look at Rotation: " + targetRot); 
-
-        if(pointerType == GameManager.PointerType.coneEye)
-        {
-            // Modify Rotation value for cone eyes
-            // Maybe also ball eyes
-        }
-        
-
-
-        
-        // Workaround for shitty texture        
         yield return new WaitForSeconds(GameManager.instance.TimeToMoveToSquare);
 
         // Robo has reached square
-        transform.eulerAngles = m_initRot; 
-        //DebugText.text = ("Robo Arm is moving to default position"); 
-
-        //yield return new WaitForSeconds(GameManager.instance.TimeToRecover); 
-
-        //NextSequenceRdy = true; 
+        //transform.eulerAngles = m_initRot; 
+        StartCoroutine(SmoothLookAt(m_playerPos)); 
     }
 
 
-    /*
-    private float CalculateAngle(GameManager.Square square)
+    private IEnumerator SmoothLookAt(Vector3 position)
     {
-        Vector3 targetVector = new Vector3(square.transform.position.x - transform.position.x, square.transform.position.y - transform.position.y, square.transform.position.z - transform.position.z);
-        
+        Vector3 targetVector = position - transform.position; 
+        Quaternion rot = Quaternion.LookRotation(targetVector, Vector3.up);
 
-        float angle = Vector3.Angle(Vector3.down, targetVector); 
-        print("Target Square: " + square.ID + "; Target Vector: " + targetVector + "; Angle: " + angle); 
 
-        if(square.ID == 0 || square.ID == 3)
-            angle = -angle; 
-        
-        if(!IsLeftEye)
+        Vector3 rotEuler = new Vector3(rot.eulerAngles.x, rot.eulerAngles.y, rot.eulerAngles.z); 
+        Vector3 eulerClamped = Vector3.zero; 
+        if(rotEuler.x != 0)
         {
-            if(square.ID == 1 || square.ID == 4)
-                angle = -angle; 
+            eulerClamped = new Vector3( Mathf.Clamp(rotEuler.x, -9f, 9f), Mathf.Clamp(rotEuler.y, 170f , 190f), 0); 
+        }     
+        else
+        {
+            eulerClamped = new Vector3( Mathf.Clamp(rotEuler.x, -13f, 13f), Mathf.Clamp(rotEuler.y, 167f , 193f), 0); 
+        }   
+        Quaternion rotClmaped = Quaternion.Euler(eulerClamped); 
+
+        float time = 0f; 
+        while(time < 1)
+        {
+            transform.localRotation = Quaternion.Slerp(transform.rotation, rotClmaped, time ); 
+            time += Time.deltaTime * slerpSpeed; 
+            yield return null; 
         }
-
-        return angle; 
-
-
+        print("Look at Rotation: " + rot.eulerAngles); 
     }
-    */
 
 
 }
