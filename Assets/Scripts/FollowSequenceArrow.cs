@@ -7,11 +7,7 @@ using System;
 public class FollowSequenceArrow : MonoBehaviour
 {
     [Header("Variables")]
-    public float TimeToMoveToSquare; 
-    public float TimeToRecover; 
     public bool IsLeftArrow; 
-    public bool NextSequenceRdy = true; 
-
 
     [Header("References")]
     public Sprite ArrowSprite; 
@@ -34,11 +30,6 @@ public class FollowSequenceArrow : MonoBehaviour
 
         //DebugText.text = null; 
         
-    }
-
-    void Update()
-    {
-       
     }
 
     public IEnumerator Sequence(GameManager.Square square)

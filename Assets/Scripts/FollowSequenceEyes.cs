@@ -7,51 +7,49 @@ using System;
 public class FollowSequenceEyes : MonoBehaviour
 {
     [Header("Variables")]
-    public float TimeToMoveToSquare; 
-    public float TimeToRecover; 
     public bool IsLeftEye; 
     public bool NextSequenceRdy = true; 
 
-
-    [Header("References")]
-    public Sprite ArrowSprite; 
-    public Sprite ArrowInactiveSprite; 
-    public TextMeshProUGUI DebugText; 
-
-
-    private int m_currentSquare = 0;
-    private Vector3 m_ArrowPosOffset;  
-    private Vector3 m_targetPos; 
+    [SerializeField]
+    private Vector3 m_initRot; 
 
     // TO-DO: 
     // - Create Dictionary for Angles so it does not have to be calculated twice
 
-    void Start()
-    {
+    
+    public GameManager.PointerType pointerType; 
 
-        //DebugText.text = null; 
-        
-        
+    private void Start() 
+    {
+        pointerType = GameManager.instance.pointerType;     
     }
 
-    void Update()
-    {
-       
-    }
 
     public IEnumerator Sequence(GameManager.Square square)
     {
         
-
         transform.LookAt(square.transform.position); 
-        Vector3 currentRot = transform.eulerAngles; // Use this Vector3 to customize Rotation if needed
-        print(currentRot); 
+        Vector3 targetRot = transform.eulerAngles; 
+        //transform.eulerAngles = m_initRot; 
+        
+        
+        //Quaternion.Lerp(transform.rotation, Quaternion.Euler(targetRot), .001f); 
+        print("Look at Rotation: " + targetRot); 
+
+        if(pointerType == GameManager.PointerType.coneEye)
+        {
+            // Modify Rotation value for cone eyes
+            // Maybe also ball eyes
+        }
+        
+
+
         
         // Workaround for shitty texture        
         yield return new WaitForSeconds(GameManager.instance.TimeToMoveToSquare);
 
         // Robo has reached square
-        transform.eulerAngles = new Vector3(0,180,0); 
+        transform.eulerAngles = m_initRot; 
         //DebugText.text = ("Robo Arm is moving to default position"); 
 
         //yield return new WaitForSeconds(GameManager.instance.TimeToRecover); 
@@ -59,6 +57,8 @@ public class FollowSequenceEyes : MonoBehaviour
         //NextSequenceRdy = true; 
     }
 
+
+    /*
     private float CalculateAngle(GameManager.Square square)
     {
         Vector3 targetVector = new Vector3(square.transform.position.x - transform.position.x, square.transform.position.y - transform.position.y, square.transform.position.z - transform.position.z);
@@ -80,6 +80,7 @@ public class FollowSequenceEyes : MonoBehaviour
 
 
     }
+    */
 
 
 }
