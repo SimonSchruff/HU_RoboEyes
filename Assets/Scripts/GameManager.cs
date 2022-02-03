@@ -11,7 +11,8 @@ public class GameManager : MonoBehaviour
     {
         arrow, 
         eye, 
-        coneEye
+        coneEye, 
+        flatEye
     }
     public PointerType pointerType; 
     public int CurrentSquare = 0; 
@@ -22,6 +23,7 @@ public class GameManager : MonoBehaviour
     public List<int> Sequence = new List<int>(5); 
     public FollowSequenceArrow[] Arrows = new FollowSequenceArrow[2]; 
     public FollowSequenceEyes[] Eyes = new FollowSequenceEyes[2]; 
+    public DesignerEye[] flatEyes = new DesignerEye[2]; 
     private float m_timer; 
     private bool m_initalMove = true; 
 
@@ -90,6 +92,15 @@ public class GameManager : MonoBehaviour
                         Eyes[i].StartCoroutine(Eyes[i].Sequence(Squares[squareToShow])); 
                     }
                 break; 
+                case PointerType.flatEye: 
+                    foreach(DesignerEye eye in flatEyes)
+                    {
+                        if(eye == null)
+                            return; 
+                        int squareToShow = Sequence[CurrentSquare]; 
+                        eye.StartCoroutine(eye.Sequence(Squares[squareToShow])); 
+                    }
+                break; 
                 
             }
 
@@ -111,6 +122,10 @@ public class GameManager : MonoBehaviour
                 {
                     e.gameObject.SetActive(false); 
                 }
+                foreach(DesignerEye e in flatEyes)
+                {
+                    e.gameObject.SetActive(false); 
+                }
             break; 
             case PointerType.eye: 
                 foreach(FollowSequenceArrow a in Arrows)
@@ -124,6 +139,10 @@ public class GameManager : MonoBehaviour
                     else
                         Eyes[i].gameObject.SetActive(false); 
                 }
+                foreach(DesignerEye e in flatEyes)
+                {
+                    e.gameObject.SetActive(false); 
+                }
             break; 
             case PointerType.coneEye: 
                 foreach(FollowSequenceArrow a in Arrows)
@@ -136,6 +155,24 @@ public class GameManager : MonoBehaviour
                         Eyes[i].gameObject.SetActive(false); 
                     else
                         Eyes[i].gameObject.SetActive(true); 
+                }
+                foreach(DesignerEye e in flatEyes)
+                {
+                    e.gameObject.SetActive(false); 
+                }
+            break; 
+            case PointerType.flatEye: 
+                foreach(FollowSequenceArrow a in Arrows)
+                {
+                    a.gameObject.SetActive(false); 
+                }
+                foreach(FollowSequenceEyes e in Eyes)
+                {
+                    e.gameObject.SetActive(false); 
+                }
+                foreach(DesignerEye e in flatEyes)
+                {
+                    e.gameObject.SetActive(true); 
                 }
             break; 
         }
