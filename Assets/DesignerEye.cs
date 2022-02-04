@@ -8,19 +8,15 @@ public class DesignerEye : MonoBehaviour
     public GameObject BackgroundCircle; 
     public GameObject Circle; 
     public GameObject Pupil; 
-    public GameObject Line;
+    public GameObject[] Lines = new GameObject[4]; 
 
     #region privateVars
     private Vector3 _eyeCenterPos; 
     private float _radius; 
     private float _pupilRadius; 
     private float _circleRadius; 
-
-    // Anchors
-    private Vector3 _eyeTopAnchor; 
-    private Vector3 _eyeBotAnchor; 
-    private Vector3 _eyeLeftAnchor; 
-    private Vector3 _eyeRightAnchor; 
+    private Vector3[] _eyeAnchors = new Vector3[4]; 
+    private Vector3[] _pupilAnchors = new Vector3[4]; 
 
     #endregion
 
@@ -28,102 +24,129 @@ public class DesignerEye : MonoBehaviour
     { 
         _eyeCenterPos = transform.position; 
         // Calculate Radius of Eye Part; Values come from Illustrator File
-        _radius = BackgroundCircle.GetComponent<SpriteRenderer>().bounds.size.x / 2; 
+        _radius = ( BackgroundCircle.GetComponent<SpriteRenderer>().bounds.size.x / 2 ) - 0.03f;  // Offset bc Sprite Size is not exactly size of circle in-game
         _circleRadius = _radius * 0.847431f; // 826.5px/975.3px
         _pupilRadius = _radius * 0.463754f; //  452.3px/975.3px
-        //print("Radius: " + _radius + "; Pupil Radius: " + _pupilRadius + "; InnerCircle Radius: " + _circleRadius); 
 
-        // Set Anchors for all sides -> Probably should Array later
-        _eyeTopAnchor = _eyeCenterPos + new Vector3(0, _radius ,0); 
+        // Set Eye Anchor Positions; Top, Bot, Left, Right
+        _eyeAnchors[0] = _eyeCenterPos + new Vector3(0, _radius,0);
+        _eyeAnchors[1] = _eyeCenterPos - new Vector3(0, _radius,0); 
+        _eyeAnchors[2] = _eyeCenterPos - new Vector3(_radius, 0 , 0); 
+        _eyeAnchors[3] = _eyeCenterPos + new Vector3(_radius, 0 , 0); 
     }
 
+    /// <summary> 
+    /// Called by Game Manager with square to look at
+    /// Called once per time that it takes to look at square and go back
+    /// </summary>
     public IEnumerator Sequence(GameManager.Square square)
     {   
-        // Calculates direction towards target Square
-        Vector3 direction = new Vector3(square.transform.position.x - transform.position.x, square.transform.position.y - transform.position.y, 0 );
-        //print("dir Vector: "+ directionVector); 
+        LookAt(square.transform.position); 
 
-        // zValue increases the further square is away -> ratio becomes closer to 0 -> pupil stays closer to center
-        float zValue = ( Mathf.Abs(square.transform.position.z) < 1 ) ? zValue = 1 : zValue = Mathf.Abs(square.transform.position.z); 
-        float ratio =  1 / zValue; 
-        print(ratio); 
-
-        MovePupil(direction, ratio); 
-        MoveCircle(direction, ratio); 
-        SetLines(); 
-        
         yield return new WaitForSeconds(GameManager.instance.TimeToMoveToSquare);
 
         ResetEye(); 
     }
 
-    //// WIP ////
-    private void SetLines()
+    /// <summary> 
+    /// Moves pupil, inner circle and sets lines according to target position
+    /// </summary>
+    private void LookAt(Vector3 targetPos)
     {
-        // Position of Anchors for Lines
-        Vector3 pupilTopAnchor = Pupil.transform.position + new Vector3(0, _pupilRadius ,0); 
+        // Calculates direction towards target Square
+        Vector3 direction = new Vector3(targetPos.x - transform.position.x, targetPos.y - transform.position.y, 0 );
 
-        Vector3 eyeAncToPupilAnc = new Vector3(_eyeTopAnchor.x - pupilTopAnchor.x, _eyeTopAnchor.y - pupilTopAnchor.y, 0 ); 
-        
-        
-        
-        Line.transform.eulerAngles = new Vector3(0,0,-Mathf.Rad2Deg * Mathf.Atan((pupilTopAnchor.x - _eyeTopAnchor.x)/(pupilTopAnchor.y - _eyeTopAnchor.y)));
-        Line.transform.position = _eyeTopAnchor; 
-        // SET SCALE OF LINE // WIP
-        //Line.transform.localScale = new Vector3(0,0,0); 
-        
+        // zValue increases the further square is away -> ratio becomes closer to 0 -> pupil stays closer to center
+        float zValue = ( Mathf.Abs(targetPos.z) < 1 ) ? 1 : Mathf.Abs(targetPos.z); 
+        float ratio =  1 / zValue; 
 
-    }
-
-    private void MovePupil(Vector3 dir, float ratio)
-    {
+        #region Move Pupil
         // Calculates the vector pupil is supposed to be moved
-        Vector3 newPupilPos = new Vector3(Pupil.transform.position.x + (dir.x * ratio), Pupil.transform.position.y + (dir.y * ratio), 0); 
+        Vector3 newPupilPos = new Vector3(Pupil.transform.position.x + (direction.x * ratio), Pupil.transform.position.y + (direction.y * ratio), 0);  
 
         // Calculate wether or not pupil is within _radius of the eye 
         float distToPupil = Vector3.Distance(newPupilPos, _eyeCenterPos); 
-        if(distToPupil > (_radius - _pupilRadius))
-        {
+
+        if(distToPupil > (_radius - _pupilRadius)) // Pupil is NOT within the eye
+        {   
             // Calculate the Vector from Eye Center Pos to Pupil Center Pos
             Vector3 fromEyeToPupil = newPupilPos - _eyeCenterPos; 
-            // Multiply Vector with radius - pupilRadius and divide it by distance
+            // Multiply Vector with radius - pupilRadius and divide it by distance to get max distance pupil can be moved
             fromEyeToPupil *= (_radius - _pupilRadius) / distToPupil; 
             Pupil.transform.position = fromEyeToPupil + _eyeCenterPos; 
         }
-        else
+        else // Pupil is within eye
         {
             Pupil.transform.position = newPupilPos; 
         }
-    }
+        #endregion
 
-    private void MoveCircle(Vector3 dir, float ratio)
-    {
-        // Calculates the vector circle is supposed to be moved
-        Vector3 newCirclePos = new Vector3(Circle.transform.position.x + (dir.x * ratio), Circle.transform.position.y + (dir.y * ratio), 0); 
+        #region Set Lines
+        // Set Pupil Anchors to be used by Lines; Top, Bot, Left, Right
+        _pupilAnchors[0] = Pupil.transform.position + new Vector3(0, _pupilRadius - 0.05f, 0);
+        _pupilAnchors[1] = Pupil.transform.position - new Vector3(0, _pupilRadius - 0.05f, 0);
+        _pupilAnchors[2] = Pupil.transform.position - new Vector3( _pupilRadius - 0.05f, 0 , 0);
+        _pupilAnchors[3] = Pupil.transform.position + new Vector3( _pupilRadius - 0.05f, 0 , 0);
 
-        // Calculate wether or not circle is within _radius of the eye 
-        float distToCircle = Vector3.Distance(newCirclePos, _eyeCenterPos); 
-        if(distToCircle > (_radius - _circleRadius))
+        for(int i = 0; i < Lines.Length; i++)
         {
+            Vector3 fromEyeAncToPupilAnc = new Vector3( _pupilAnchors[i].x - _eyeAnchors[i].x , _pupilAnchors[i].y - _eyeAnchors[i].y , 0 ); 
+
+            if(i < 2) // Vertical Lines
+            {
+                Lines[i].transform.eulerAngles = new Vector3(0,0, -Mathf.Rad2Deg * Mathf.Atan(fromEyeAncToPupilAnc.x / fromEyeAncToPupilAnc.y)); 
+                Lines[i].transform.localScale = new Vector3(1, fromEyeAncToPupilAnc.magnitude, 1); 
+            }
+            else // Horizontal Lines
+            {
+                Lines[i].transform.eulerAngles = new Vector3(0,0, Mathf.Rad2Deg * Mathf.Atan( fromEyeAncToPupilAnc.y / fromEyeAncToPupilAnc.x )); 
+                Lines[i].transform.localScale = new Vector3(fromEyeAncToPupilAnc.magnitude, 1 , 1); 
+            }
+        }
+        #endregion
+
+        #region Move inner Circle
+        // Calculates the vector circle is supposed to be moved
+        Vector3 circlePos = new Vector3(Circle.transform.position.x + (direction.x * ratio), Circle.transform.position.y + (direction.y * ratio), 0); 
+
+        // Calculate wether or not circle is within radius of the eye 
+        float distToCircle = Vector3.Distance(circlePos, _eyeCenterPos); 
+
+        if(distToCircle > (_radius - _circleRadius)) // Circle is NOT within radius of eye
+        {   
             // Calculate the Vector from Eye Center Pos to Pupil Center Pos
-            Vector3 fromEyeToCircle = newCirclePos - _eyeCenterPos; 
-            // Multiply Vector with radius - pupilRadius and divide it by distance
+            Vector3 fromEyeToCircle = circlePos - _eyeCenterPos; 
+            // Multiply Vector with radius - circleRadius and divide it by distance to get max distance circle can be moved
             fromEyeToCircle *= (_radius - _circleRadius) / distToCircle; 
             Circle.transform.position = fromEyeToCircle + _eyeCenterPos; 
         }
-        else
+        else // Circle is within eye
         {
-            Circle.transform.position = newCirclePos; 
+            Circle.transform.position = circlePos; 
         }
+        #endregion
     }
 
+    /// <summary> 
+    /// Resets the eye to the original position
+    /// </summary>
     private void ResetEye()
     {
         Pupil.transform.localPosition = Vector3.zero; 
         Circle.transform.localPosition = Vector3.zero; 
 
-        Line.transform.eulerAngles = Vector3.zero;
-        Line.transform.position = _eyeTopAnchor; 
-
+        for(int i = 0; i < Lines.Length; i++)
+        {
+            if( i < 2 ) // Vertical Lines
+            {
+                Lines[i].transform.eulerAngles = Vector3.zero; 
+                Lines[i].transform.localScale = new Vector3(1,0.35f,1); 
+            }
+            else // Horizontal Lines
+            {
+                Lines[i].transform.eulerAngles = Vector3.zero; 
+                Lines[i].transform.localScale = new Vector3(0.35f,1,1); 
+            }
+        }
     }
 }
