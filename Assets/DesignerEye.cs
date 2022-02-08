@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class DesignerEye : MonoBehaviour
 {
+    [SerializeField] private float _lerpDuration = 1f; 
+    [SerializeField] private AnimationCurve _animationCurve = new AnimationCurve(); 
+
     [Header("Object References")]
     public GameObject BackgroundCircle; 
     public GameObject Circle; 
@@ -41,18 +44,22 @@ public class DesignerEye : MonoBehaviour
     /// </summary>
     public IEnumerator Sequence(GameManager.Square square)
     {   
-        LookAt(square.transform.position); 
+        StartCoroutine( LookAt(square.transform.position)); 
 
         yield return new WaitForSeconds(GameManager.instance.TimeToMoveToSquare);
 
-        ResetEye(); 
+        StartCoroutine(ResetEye()) ; 
     }
 
     /// <summary> 
     /// Moves pupil, inner circle and sets lines according to target position
     /// </summary>
-    private void LookAt(Vector3 targetPos)
+    private IEnumerator LookAt(Vector3 targetPos)
     {
+        float t = 0f; 
+        Vector3 pupilTarget; 
+        Vector3 circleTarget; 
+
         // Calculates direction towards target Square
         Vector3 direction = new Vector3(targetPos.x - transform.position.x, targetPos.y - transform.position.y, 0 );
 
@@ -60,7 +67,7 @@ public class DesignerEye : MonoBehaviour
         float zValue = ( Mathf.Abs(targetPos.z) < 1 ) ? 1 : Mathf.Abs(targetPos.z); 
         float ratio =  1 / zValue; 
 
-        #region Move Pupil
+        #region Calculate Pupil TargetPosition
         // Calculates the vector pupil is supposed to be moved
         Vector3 newPupilPos = new Vector3(Pupil.transform.position.x + (direction.x * ratio), Pupil.transform.position.y + (direction.y * ratio), 0);  
 
@@ -73,39 +80,15 @@ public class DesignerEye : MonoBehaviour
             Vector3 fromEyeToPupil = newPupilPos - _eyeCenterPos; 
             // Multiply Vector with radius - pupilRadius and divide it by distance to get max distance pupil can be moved
             fromEyeToPupil *= (_radius - _pupilRadius) / distToPupil; 
-            Pupil.transform.position = fromEyeToPupil + _eyeCenterPos; 
-        }
+            pupilTarget = fromEyeToPupil + _eyeCenterPos; 
+            
+        }     
         else // Pupil is within eye
         {
-            Pupil.transform.position = newPupilPos; 
+            pupilTarget = newPupilPos; 
         }
         #endregion
-
-        #region Set Lines
-        // Set Pupil Anchors to be used by Lines; Top, Bot, Left, Right
-        _pupilAnchors[0] = Pupil.transform.position + new Vector3(0, _pupilRadius - 0.05f, 0);
-        _pupilAnchors[1] = Pupil.transform.position - new Vector3(0, _pupilRadius - 0.05f, 0);
-        _pupilAnchors[2] = Pupil.transform.position - new Vector3( _pupilRadius - 0.05f, 0 , 0);
-        _pupilAnchors[3] = Pupil.transform.position + new Vector3( _pupilRadius - 0.05f, 0 , 0);
-
-        for(int i = 0; i < Lines.Length; i++)
-        {
-            Vector3 fromEyeAncToPupilAnc = new Vector3( _pupilAnchors[i].x - _eyeAnchors[i].x , _pupilAnchors[i].y - _eyeAnchors[i].y , 0 ); 
-
-            if(i < 2) // Vertical Lines
-            {
-                Lines[i].transform.eulerAngles = new Vector3(0,0, -Mathf.Rad2Deg * Mathf.Atan(fromEyeAncToPupilAnc.x / fromEyeAncToPupilAnc.y)); 
-                Lines[i].transform.localScale = new Vector3(1, fromEyeAncToPupilAnc.magnitude, 1); 
-            }
-            else // Horizontal Lines
-            {
-                Lines[i].transform.eulerAngles = new Vector3(0,0, Mathf.Rad2Deg * Mathf.Atan( fromEyeAncToPupilAnc.y / fromEyeAncToPupilAnc.x )); 
-                Lines[i].transform.localScale = new Vector3(fromEyeAncToPupilAnc.magnitude, 1 , 1); 
-            }
-        }
-        #endregion
-
-        #region Move inner Circle
+        #region Calculate inner Circle TargetPosition
         // Calculates the vector circle is supposed to be moved
         Vector3 circlePos = new Vector3(Circle.transform.position.x + (direction.x * ratio), Circle.transform.position.y + (direction.y * ratio), 0); 
 
@@ -118,35 +101,86 @@ public class DesignerEye : MonoBehaviour
             Vector3 fromEyeToCircle = circlePos - _eyeCenterPos; 
             // Multiply Vector with radius - circleRadius and divide it by distance to get max distance circle can be moved
             fromEyeToCircle *= (_radius - _circleRadius) / distToCircle; 
-            Circle.transform.position = fromEyeToCircle + _eyeCenterPos; 
+            circleTarget = fromEyeToCircle + _eyeCenterPos; 
         }
         else // Circle is within eye
         {
-            Circle.transform.position = circlePos; 
+            circleTarget = circlePos; 
         }
         #endregion
+        #region Move all Eye Parts
+        
+        // Lerp Pupil and circle for smooth eye movement
+        while(t < _lerpDuration)
+        {
+            t += Time.deltaTime; 
+
+            Pupil.transform.position = Vector3.Lerp(Pupil.transform.position, pupilTarget, _animationCurve.Evaluate(t/_lerpDuration) ); 
+            Circle.transform.position = Vector3.Lerp(Circle.transform.position, circleTarget, _animationCurve.Evaluate(t/_lerpDuration)); 
+
+            // Set Pupil Anchors to be used by Lines; Top, Bot, Left, Right
+            _pupilAnchors[0] = Pupil.transform.position + new Vector3(0, _pupilRadius - 0.05f, 0);
+            _pupilAnchors[1] = Pupil.transform.position - new Vector3(0, _pupilRadius - 0.05f, 0);
+            _pupilAnchors[2] = Pupil.transform.position - new Vector3( _pupilRadius - 0.05f, 0 , 0);
+            _pupilAnchors[3] = Pupil.transform.position + new Vector3( _pupilRadius - 0.05f, 0 , 0);
+
+            for(int i = 0; i < Lines.Length; i++)
+            {
+                Vector3 fromEyeAncToPupilAnc = new Vector3( _pupilAnchors[i].x - _eyeAnchors[i].x , _pupilAnchors[i].y - _eyeAnchors[i].y , 0 ); 
+
+                if(i < 2) // Vertical Lines
+                {
+                    Lines[i].transform.eulerAngles = new Vector3(0,0, -Mathf.Rad2Deg * Mathf.Atan(fromEyeAncToPupilAnc.x / fromEyeAncToPupilAnc.y)); 
+                    Lines[i].transform.localScale = new Vector3(1, fromEyeAncToPupilAnc.magnitude, 1); 
+                }
+                else // Horizontal Lines
+                {
+                    Lines[i].transform.eulerAngles = new Vector3(0,0, Mathf.Rad2Deg * Mathf.Atan( fromEyeAncToPupilAnc.y / fromEyeAncToPupilAnc.x )); 
+                    Lines[i].transform.localScale = new Vector3(fromEyeAncToPupilAnc.magnitude, 1 , 1); 
+                }
+            }
+            yield return null; 
+        }
+        #endregion
+
+
     }
 
     /// <summary> 
     /// Resets the eye to the original position
     /// </summary>
-    private void ResetEye()
+    private IEnumerator ResetEye()
     {
-        Pupil.transform.localPosition = Vector3.zero; 
-        Circle.transform.localPosition = Vector3.zero; 
+        float t = 0f;
 
-        for(int i = 0; i < Lines.Length; i++)
+        while(t < _lerpDuration)
         {
-            if( i < 2 ) // Vertical Lines
+            t += Time.deltaTime; 
+            Pupil.transform.localPosition = Vector3.Lerp(Pupil.transform.localPosition, Vector3.zero, _animationCurve.Evaluate(t/_lerpDuration)); 
+            Circle.transform.localPosition = Vector3.Lerp(Circle.transform.localPosition, Vector3.zero, _animationCurve.Evaluate(t/_lerpDuration)); 
+
+            // Set Pupil Anchors
+            _pupilAnchors[0] = Pupil.transform.position + new Vector3(0, _pupilRadius - 0.05f, 0);
+            _pupilAnchors[1] = Pupil.transform.position - new Vector3(0, _pupilRadius - 0.05f, 0);
+            _pupilAnchors[2] = Pupil.transform.position - new Vector3( _pupilRadius - 0.05f, 0 , 0);
+            _pupilAnchors[3] = Pupil.transform.position + new Vector3( _pupilRadius - 0.05f, 0 , 0);
+
+            for(int i = 0; i < Lines.Length; i++)
             {
-                Lines[i].transform.eulerAngles = Vector3.zero; 
-                Lines[i].transform.localScale = new Vector3(1,0.35f,1); 
+                Vector3 fromEyeAncToPupilAnc = new Vector3( _pupilAnchors[i].x - _eyeAnchors[i].x , _pupilAnchors[i].y - _eyeAnchors[i].y , 0 ); 
+
+                if(i < 2) // Vertical Lines
+                {
+                    Lines[i].transform.eulerAngles = new Vector3(0,0, -Mathf.Rad2Deg * Mathf.Atan(fromEyeAncToPupilAnc.x / fromEyeAncToPupilAnc.y)); 
+                    Lines[i].transform.localScale = new Vector3(1, fromEyeAncToPupilAnc.magnitude, 1); 
+                }
+                else // Horizontal Lines
+                {
+                    Lines[i].transform.eulerAngles = new Vector3(0,0, Mathf.Rad2Deg * Mathf.Atan( fromEyeAncToPupilAnc.y / fromEyeAncToPupilAnc.x )); 
+                    Lines[i].transform.localScale = new Vector3(fromEyeAncToPupilAnc.magnitude, 1 , 1); 
+                }
             }
-            else // Horizontal Lines
-            {
-                Lines[i].transform.eulerAngles = Vector3.zero; 
-                Lines[i].transform.localScale = new Vector3(0.35f,1,1); 
-            }
+            yield return null; 
         }
     }
 }
