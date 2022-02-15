@@ -600,7 +600,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &268280877
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1955,7 +1955,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &755924154
 Transform:
   m_ObjectHideFlags: 0
@@ -2244,9 +2244,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pointerType: 3
   CurrentSquare: 0
-  TimeToMoveToSquare: 5.5
+  TimeToMoveToSquare: 5
   TimeToRecover: 5
-  Sequence: 000000000300000001000000040000000200000005000000
+  BreakTime: 1
+  Sequence: 00000000010000000200000001000000050000000300000004000000020000000100000002000000
   Arrows:
   - {fileID: 1824005363}
   - {fileID: 1463181190}

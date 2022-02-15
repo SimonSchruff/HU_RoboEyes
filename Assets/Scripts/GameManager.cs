@@ -18,8 +18,9 @@ public class GameManager : MonoBehaviour
     public int CurrentSquare = 0; 
 
     [Header("Time Variables")]
-    public float TimeToMoveToSquare = 4f; 
-    public float TimeToRecover = 2f; 
+    public float TimeToMoveToSquare = 5f; 
+    public float TimeToRecover = 5f; 
+    public float BreakTime = 1f; 
     public List<int> Sequence = new List<int>(5); 
     public FollowSequenceArrow[] Arrows = new FollowSequenceArrow[2]; 
     public FollowSequenceEyes[] Eyes = new FollowSequenceEyes[2]; 
@@ -50,13 +51,25 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        /// Roboter Ablauf: 
+        /// Start -> 5s Pause
+        /// Pro Bewegung: 
+        ///     -> 1s Pause ( auf null position )
+        ///     -> 5s Bewegung auf Ziel
+        ///     -> 5s Bewegung auf Null
+
         m_timer += Time.deltaTime; 
 
-        //Gives Square Transform to each Pointer in scene according to pointerType enum
-        if(m_timer >= (TimeToMoveToSquare + TimeToRecover) || m_initalMove)
+        // Ensures that inital move takes a break of 5sec before starting to move
+        if(m_initalMove && m_timer >= 5f)
         {
             m_initalMove = false; 
-            
+            m_timer = 1000f; 
+        }
+
+        //Gives Square Transform to each Pointer in scene according to pointerType enum
+        if(m_timer >= (TimeToMoveToSquare + TimeToRecover + BreakTime) && !m_initalMove )
+        {
             if(CurrentSquare >= Sequence.Count)
             {
                 GameOver(); 

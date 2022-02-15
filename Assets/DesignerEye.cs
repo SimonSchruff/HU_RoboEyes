@@ -44,6 +44,8 @@ public class DesignerEye : MonoBehaviour
     /// </summary>
     public IEnumerator Sequence(GameManager.Square square)
     {   
+        yield return new WaitForSeconds(GameManager.instance.BreakTime);
+
         StartCoroutine( LookAt(square.transform.position)); 
 
         yield return new WaitForSeconds(GameManager.instance.TimeToMoveToSquare);

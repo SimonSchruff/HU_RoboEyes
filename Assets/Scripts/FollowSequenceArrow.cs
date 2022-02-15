@@ -34,16 +34,11 @@ public class FollowSequenceArrow : MonoBehaviour
 
     public IEnumerator Sequence(GameManager.Square square)
     {
-        //NextSequenceRdy = false; 
+        m_sp.sprite = ArrowInactiveSprite;  
+
+        yield return new WaitForSeconds(GameManager.instance.BreakTime);
+
         m_sp.sprite = ArrowSprite;  
-        //DebugText.text = ("Robo Arm is moving towards square " + square.gameObject.name); 
-
-        //Get direction towards arrow
-        //GameManager.instance.SquarePositions.TryGetValue(square, out Vector3 squarePos) ; 
-        //Vector2 direction = squarePos - transform.position;  
-
-        //Rotate Arrow in that direction
-        //float angle = Vector2.SignedAngle(Vector2.right, direction); 
         float angle = CalculateAngle(square); 
         transform.eulerAngles = new Vector3(0,0,angle); 
         
@@ -52,20 +47,25 @@ public class FollowSequenceArrow : MonoBehaviour
         // Robo has reached square
         transform.eulerAngles = Vector3.zero; 
         m_sp.sprite = ArrowInactiveSprite;  
-        //DebugText.text = ("Robo Arm is moving to default position"); 
-
-        //yield return new WaitForSeconds(GameManager.instance.TimeToRecover); 
-
-        //NextSequenceRdy = true; 
     }
 
     private float CalculateAngle(GameManager.Square square)
     {
-        Vector3 targetVector = new Vector3(square.transform.position.x - transform.position.x, square.transform.position.y - transform.position.y, 0);
-        
+        Vector3 direction = new Vector3(square.transform.position.x - transform.position.x, square.transform.position.y - transform.position.y, 0);
+        float zValue = ( Mathf.Abs(square.transform.position.z) < 1 ) ? 1 : Mathf.Abs(square.transform.position.z); 
+        print(zValue); 
+        // float ratio = 1 / zValue; 
+        // Bigger Angle if zValue == 1
 
-        float angle = Vector3.Angle(Vector3.down, targetVector); 
-        print("Target Square: " + square.ID + "; Target Vector: " + targetVector + "; Angle: " + angle); 
+
+        float angle = Vector3.Angle(Vector3.down, direction); 
+        if(zValue == 1)
+            angle *= 1.5f;
+        /*
+        else if(zValue > 1)
+            angle *= .75f; 
+        */
+        //print("Target Square: " + square.ID + "; Target Vector: " + direction + "; Angle: " + angle); 
 
         if(square.ID == 0 || square.ID == 3)
             angle = -angle; 
@@ -77,8 +77,6 @@ public class FollowSequenceArrow : MonoBehaviour
         }
 
         return angle; 
-
-
     }
 
 }
