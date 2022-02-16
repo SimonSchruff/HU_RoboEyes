@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement; 
 using System; 
+using TMPro; 
 
 public class GameManager : MonoBehaviour
 {
@@ -16,17 +17,17 @@ public class GameManager : MonoBehaviour
     }
     public PointerType pointerType; 
     public int CurrentSquare = 0; 
+    public List<int> Sequence = new List<int>(5); 
 
     [Header("Time Variables")]
     public float TimeToMoveToSquare = 5f; 
     public float TimeToRecover = 5f; 
     public float BreakTime = 1f; 
-    public List<int> Sequence = new List<int>(5); 
+
+    [Header("Object References")]
     public FollowSequenceArrow[] Arrows = new FollowSequenceArrow[2]; 
     public FollowSequenceEyes[] Eyes = new FollowSequenceEyes[2]; 
     public DesignerEye[] flatEyes = new DesignerEye[2]; 
-    private float m_timer; 
-    private bool m_initalMove = true; 
 
     [Serializable]
     public struct Square
@@ -34,7 +35,12 @@ public class GameManager : MonoBehaviour
         public int ID; 
         public Transform transform; 
     }
+    
     public Square[] Squares = new Square[6]; 
+    [SerializeField] private TextMeshProUGUI m_timerText; 
+    private bool m_isTimerOver = false; 
+    private float m_timer; 
+    private bool m_initalMove = true; 
 
     
 
@@ -45,8 +51,10 @@ public class GameManager : MonoBehaviour
         else
             instance = this;         
 
-        // Set active / false for pointerType selected in enum
-        SetActivePointerType(); 
+        // Starts Timer to Sync Robot properly
+        // Also sets active selected Pointer Type
+        StartCoroutine(StartTimer()); 
+
     }
 
     private void Update()
@@ -57,6 +65,10 @@ public class GameManager : MonoBehaviour
         ///     -> 1s Pause ( auf null position )
         ///     -> 5s Bewegung auf Ziel
         ///     -> 5s Bewegung auf Null
+
+        // Checks if Starting Timer is over
+        if(!m_isTimerOver)
+            return; 
 
         m_timer += Time.deltaTime; 
 
@@ -200,5 +212,31 @@ public class GameManager : MonoBehaviour
     public void LoadSceneByName(string name)
     {
         SceneManager.LoadScene(name); 
+    }
+
+    /// <summary>
+    /// Creates 3,2,1 Timer before game starts and sets active selected pointerType
+    /// </summary>
+    private IEnumerator StartTimer()
+    {
+        if(m_timerText == null)
+        {
+            Debug.LogError("No Timer Text Set in GameManager!"); 
+            yield break; 
+        }
+
+        m_timerText.gameObject.SetActive(true); 
+        m_timerText.text = "3"; 
+        yield return new  WaitForSeconds(1); 
+
+        m_timerText.text = "2"; 
+        yield return new  WaitForSeconds(1); 
+
+        m_timerText.text = "1"; 
+        yield return new  WaitForSeconds(1); 
+
+        m_isTimerOver = true; 
+        m_timerText.gameObject.SetActive(false); 
+        SetActivePointerType(); 
     }
 }

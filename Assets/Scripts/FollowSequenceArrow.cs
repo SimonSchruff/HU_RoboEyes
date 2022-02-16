@@ -53,15 +53,16 @@ public class FollowSequenceArrow : MonoBehaviour
     {
         Vector3 direction = new Vector3(square.transform.position.x - transform.position.x, square.transform.position.y - transform.position.y, 0);
         float zValue = ( Mathf.Abs(square.transform.position.z) < 1 ) ? 1 : Mathf.Abs(square.transform.position.z); 
-        print(zValue); 
-        // float ratio = 1 / zValue; 
+        
+        float ratio = 1 / zValue; 
+        print(ratio); 
         // Bigger Angle if zValue == 1
 
 
         float angle = Vector3.Angle(Vector3.down, direction); 
+        /*
         if(zValue == 1)
             angle *= 1.5f;
-        /*
         else if(zValue > 1)
             angle *= .75f; 
         */
@@ -76,6 +77,11 @@ public class FollowSequenceArrow : MonoBehaviour
                 angle = -angle; 
         }
 
+        if(ratio < 1)
+            angle = angle * (1 - ratio); 
+        else
+            angle = angle * (1 + ratio); 
+             
         return angle; 
     }
 
