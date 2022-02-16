@@ -8,17 +8,13 @@ public class FollowSequenceArrow : MonoBehaviour
 {
     [Header("Variables")]
     public bool IsLeftArrow; 
+    private float _breakTime; 
+    private float _timeToMoveToSquare; 
 
     [Header("References")]
     public Sprite ArrowSprite; 
     public Sprite ArrowInactiveSprite; 
-    public TextMeshProUGUI DebugText; 
-
-
     private SpriteRenderer m_sp; 
-    private int m_currentSquare = 0;
-    private Vector3 m_ArrowPosOffset;  
-    private Vector3 m_targetPos; 
 
     // TO-DO: 
     // - Create Dictionary for Angles so it does not have to be calculated twice
@@ -28,21 +24,22 @@ public class FollowSequenceArrow : MonoBehaviour
         m_sp = GetComponentInChildren<SpriteRenderer>(); 
         m_sp.sprite = ArrowInactiveSprite; 
 
-        //DebugText.text = null; 
-        
+        // Get Relevant Variables from GameManager
+        _breakTime = GameManager.instance.BreakTime; 
+        _timeToMoveToSquare = GameManager.instance.TimeToMoveToSquare; 
     }
 
     public IEnumerator Sequence(GameManager.Square square)
     {
         m_sp.sprite = ArrowInactiveSprite;  
 
-        yield return new WaitForSeconds(GameManager.instance.BreakTime);
+        yield return new WaitForSeconds(_breakTime);
 
         m_sp.sprite = ArrowSprite;  
         float angle = CalculateAngle(square); 
         transform.eulerAngles = new Vector3(0,0,angle); 
         
-        yield return new WaitForSeconds(GameManager.instance.TimeToMoveToSquare);
+        yield return new WaitForSeconds(_timeToMoveToSquare);
 
         // Robo has reached square
         transform.eulerAngles = Vector3.zero; 

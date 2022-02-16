@@ -37,14 +37,13 @@ public class GameManager : MonoBehaviour
     }
     
     public Square[] Squares = new Square[6]; 
+    public Vector3 ArmNullPos = new Vector3(); 
     [SerializeField] private TextMeshProUGUI m_timerText; 
-    private bool m_isTimerOver = false; 
+    private bool m_isStartTimerOver = false; 
     private float m_timer; 
     private bool m_initalMove = true; 
 
-    
-
-    void Awake()
+    private void Awake()
     {
         if(instance != null)
             Destroy(this);  
@@ -66,12 +65,10 @@ public class GameManager : MonoBehaviour
         ///     -> 5s Bewegung auf Ziel
         ///     -> 5s Bewegung auf Null
 
-        // Checks if Starting Timer is over
-        if(!m_isTimerOver)
+        if(!m_isStartTimerOver)
             return; 
 
         m_timer += Time.deltaTime; 
-
         // Ensures that inital move takes a break of 5sec before starting to move
         if(m_initalMove && m_timer >= 5f)
         {
@@ -203,10 +200,26 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void HideAllPointers()
+    {
+        foreach(FollowSequenceArrow a in Arrows)
+        {
+            a.gameObject.SetActive(false); 
+        }
+        foreach(FollowSequenceEyes e in Eyes)
+        {
+            e.gameObject.SetActive(false); 
+        }
+        foreach(DesignerEye e in flatEyes)
+        {
+            e.gameObject.SetActive(false); 
+        }
+    }
     public void GameOver()
     {
-        print("GAME OVER! Reload Current Scene!"); 
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name); 
+        HideAllPointers(); 
+        m_timerText.gameObject.SetActive(true);
+        m_timerText.text ="Block 1 Finished!"; 
     }
 
     public void LoadSceneByName(string name)
@@ -235,7 +248,7 @@ public class GameManager : MonoBehaviour
         m_timerText.text = "1"; 
         yield return new  WaitForSeconds(1); 
 
-        m_isTimerOver = true; 
+        m_isStartTimerOver = true; 
         m_timerText.gameObject.SetActive(false); 
         SetActivePointerType(); 
     }

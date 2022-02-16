@@ -6,6 +6,7 @@ public class DesignerEye : MonoBehaviour
 {
     [SerializeField] private float _lerpDuration = 1f; 
     [SerializeField] private AnimationCurve _animationCurve = new AnimationCurve(); 
+    public bool LookAtArmNullPos = true; 
 
     [Header("Object References")]
     public GameObject BackgroundCircle; 
@@ -21,6 +22,10 @@ public class DesignerEye : MonoBehaviour
     private Vector3[] _eyeAnchors = new Vector3[4]; 
     private Vector3[] _pupilAnchors = new Vector3[4]; 
 
+    private Vector3 _armNullPos; 
+    private float _timeToMoveToSquare; 
+    private float _breakTime; 
+
     #endregion
 
     void Start()
@@ -28,7 +33,7 @@ public class DesignerEye : MonoBehaviour
         _eyeCenterPos = transform.position; 
         // Calculate Radius of Eye Part; Values come from Illustrator File
         _radius = ( BackgroundCircle.GetComponent<SpriteRenderer>().bounds.size.x / 2 ) - 0.03f;  // Offset bc Sprite Size is not exactly size of circle in-game
-        _circleRadius = _radius * 0.847431f; // 826.5px/975.3px
+        _circleRadius = _radius * 0.847431f; // 826.5px/975.3px (Dimensions in Illustrator File)
         _pupilRadius = _radius * 0.463754f; //  452.3px/975.3px
 
         // Set Eye Anchor Positions; Top, Bot, Left, Right
@@ -36,6 +41,11 @@ public class DesignerEye : MonoBehaviour
         _eyeAnchors[1] = _eyeCenterPos - new Vector3(0, _radius,0); 
         _eyeAnchors[2] = _eyeCenterPos - new Vector3(_radius, 0 , 0); 
         _eyeAnchors[3] = _eyeCenterPos + new Vector3(_radius, 0 , 0); 
+
+        // Get Relevant Variables from GameManager
+        _breakTime = GameManager.instance.BreakTime; 
+        _timeToMoveToSquare = GameManager.instance.TimeToMoveToSquare; 
+        _armNullPos = GameManager.instance.ArmNullPos; 
     }
 
     /// <summary> 
@@ -44,11 +54,23 @@ public class DesignerEye : MonoBehaviour
     /// </summary>
     public IEnumerator Sequence(GameManager.Square square)
     {   
-        yield return new WaitForSeconds(GameManager.instance.BreakTime);
+        /// NOTE: _breakTime - lerpDuration might be necessarry to avoid Eyes lagging behind
+
+        // Allows to toggle on/off wether or not eyes should look at arm before moving to target square
+        if(LookAtArmNullPos)
+        {
+            yield return new WaitForSeconds(_breakTime / 2);
+            StartCoroutine( LookAt(_armNullPos)); 
+            yield return new WaitForSeconds(_breakTime / 2);
+        }
+        else
+        {
+            yield return new WaitForSeconds(_breakTime);
+        }
 
         StartCoroutine( LookAt(square.transform.position)); 
 
-        yield return new WaitForSeconds(GameManager.instance.TimeToMoveToSquare);
+        yield return new WaitForSeconds(_timeToMoveToSquare);
 
         StartCoroutine(ResetEye()) ; 
     }
