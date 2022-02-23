@@ -74,11 +74,12 @@ public class FollowSequenceArrow : MonoBehaviour
                 angle = -angle; 
         }
 
-        if(ratio < 1)
-            angle = angle * (1 - ratio); 
+        if(ratio >= 1)
+            angle = angle * (1 + ratio); 
+        /*
         else
             angle = angle * (1 + ratio); 
-             
+        */
         return angle; 
     }
 

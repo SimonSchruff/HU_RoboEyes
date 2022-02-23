@@ -69,6 +69,7 @@ public class GameManager : MonoBehaviour
             return; 
 
         m_timer += Time.deltaTime; 
+        print(m_timer); 
         // Ensures that inital move takes a break of 5sec before starting to move
         if(m_initalMove && m_timer >= 5f)
         {
@@ -79,6 +80,8 @@ public class GameManager : MonoBehaviour
         //Gives Square Transform to each Pointer in scene according to pointerType enum
         if(m_timer >= (TimeToMoveToSquare + TimeToRecover + BreakTime) && !m_initalMove )
         {
+            m_timer = 0; 
+
             if(CurrentSquare >= Sequence.Count)
             {
                 GameOver(); 
@@ -126,7 +129,6 @@ public class GameManager : MonoBehaviour
                 
             }
 
-            m_timer = 0; 
             CurrentSquare++;  
         }
     }
@@ -217,9 +219,12 @@ public class GameManager : MonoBehaviour
     }
     public void GameOver()
     {
+        /*
         HideAllPointers(); 
         m_timerText.gameObject.SetActive(true);
         m_timerText.text ="Block 1 Finished!"; 
+        */
+        LoadSceneByName(SceneManager.GetActiveScene().name); 
     }
 
     public void LoadSceneByName(string name)

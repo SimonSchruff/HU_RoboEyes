@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DesignerEye : MonoBehaviour
 {
-    [SerializeField] private float _lerpDuration = 1f; 
+    [SerializeField] private float _lerpDuration = 0.5f; 
     [SerializeField] private AnimationCurve _animationCurve = new AnimationCurve(); 
     public bool LookAtArmNullPos = true; 
 
@@ -59,9 +59,9 @@ public class DesignerEye : MonoBehaviour
         // Allows to toggle on/off wether or not eyes should look at arm before moving to target square
         if(LookAtArmNullPos)
         {
-            yield return new WaitForSeconds(_breakTime / 2);
+            
             StartCoroutine( LookAt(_armNullPos)); 
-            yield return new WaitForSeconds(_breakTime / 2);
+            yield return new WaitForSeconds(_breakTime);
         }
         else
         {
