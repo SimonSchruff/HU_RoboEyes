@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     public List<int> Sequence = new List<int>(5); 
 
     [Header("Time Variables")]
+    public float StartTimerLength = 5f; 
     public float TimeToMoveToSquare = 5f; 
     public float TimeToRecover = 5f; 
     public float BreakTime = 1f; 
@@ -219,12 +220,13 @@ public class GameManager : MonoBehaviour
     }
     public void GameOver()
     {
-        /*
+        
         HideAllPointers(); 
         m_timerText.gameObject.SetActive(true);
         m_timerText.text ="Block 1 Finished!"; 
-        */
-        LoadSceneByName(SceneManager.GetActiveScene().name); 
+        
+    
+        //LoadSceneByName(SceneManager.GetActiveScene().name); 
     }
 
     public void LoadSceneByName(string name)
@@ -233,7 +235,8 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Creates 3,2,1 Timer before game starts and sets active selected pointerType
+    /// Creates 3,2,1 Timer before game starts and sets active selected pointerType; 
+    /// Length Determined by public StartTimerLength variable (in Seconds)
     /// </summary>
     private IEnumerator StartTimer()
     {
@@ -244,14 +247,12 @@ public class GameManager : MonoBehaviour
         }
 
         m_timerText.gameObject.SetActive(true); 
-        m_timerText.text = "3"; 
-        yield return new  WaitForSeconds(1); 
-
-        m_timerText.text = "2"; 
-        yield return new  WaitForSeconds(1); 
-
-        m_timerText.text = "1"; 
-        yield return new  WaitForSeconds(1); 
+        
+        for(int i = 0; i < StartTimerLength; i++)
+        {
+            m_timerText.text = (StartTimerLength - i).ToString(); 
+            yield return new  WaitForSeconds(1); 
+        }
 
         m_isStartTimerOver = true; 
         m_timerText.gameObject.SetActive(false); 
