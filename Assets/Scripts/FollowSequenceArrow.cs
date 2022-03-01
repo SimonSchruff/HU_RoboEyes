@@ -65,12 +65,12 @@ public class FollowSequenceArrow : MonoBehaviour
         */
         //print("Target Square: " + square.ID + "; Target Vector: " + direction + "; Angle: " + angle); 
 
-        if(square.ID == 0 || square.ID == 3)
+        if(square.ID == 1 || square.ID == 2)
             angle = -angle; 
         
         if(!IsLeftArrow)
         {
-            if(square.ID == 1 || square.ID == 4)
+            if(square.ID == 3 || square.ID == 4)
                 angle = -angle; 
         }
 
