@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class MenuManager : MonoBehaviour
 {
-    public GameObject SplashScreen; 
     public GameObject Settings; 
     public GameObject StartScreen; 
 
@@ -27,5 +26,10 @@ public class MenuManager : MonoBehaviour
                 StartScreen.SetActive(true);
             break; 
         }
+    }
+
+    public void Quit()
+    {
+        Application.Quit(); 
     }
 }

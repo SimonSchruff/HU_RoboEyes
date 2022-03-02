@@ -13,11 +13,10 @@ public class TotalTimeCalc : MonoBehaviour
     private void Start() 
     {
         _totalTime = GetComponentInChildren<TMP_InputField>(); 
-        if(_totalTime == null) {print("total Time Field not set!");}
         CalculateTotalTime(); 
     }
 
-    public async void CalculateTotalTime()
+    public void CalculateTotalTime()
     {   
         float t1 = 0; float t2 = 0; float t3 = 0; 
 

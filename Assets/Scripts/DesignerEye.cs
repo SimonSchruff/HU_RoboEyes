@@ -6,7 +6,6 @@ public class DesignerEye : MonoBehaviour
 {
     [SerializeField] private float _lerpDuration = 0.5f; 
     [SerializeField] private AnimationCurve _animationCurve = new AnimationCurve(); 
-    public bool LookAtArmNullPos = true; 
 
     [Header("Object References")]
     public GameObject BackgroundCircle; 
@@ -25,6 +24,8 @@ public class DesignerEye : MonoBehaviour
     private Vector3 _armNullPos; 
     private float _timeToMoveToSquare; 
     private float _breakTime; 
+    private bool _lookAtArmNullPos = true; 
+
 
     #endregion
 
@@ -46,6 +47,7 @@ public class DesignerEye : MonoBehaviour
         _breakTime = GameManager.instance.BreakTime; 
         _timeToMoveToSquare = GameManager.instance.TimeToMoveToSquare; 
         _armNullPos = GameManager.instance.ArmNullPos; 
+        _lookAtArmNullPos = GameManager.instance.LookAtArmNullPos; 
     }
 
     /// <summary> 
@@ -57,9 +59,8 @@ public class DesignerEye : MonoBehaviour
         /// NOTE: _breakTime - lerpDuration might be necessarry to avoid Eyes lagging behind
 
         // Allows to toggle on/off wether or not eyes should look at arm before moving to target square
-        if(LookAtArmNullPos)
+        if(_lookAtArmNullPos)
         {
-            
             StartCoroutine( LookAt(_armNullPos)); 
             yield return new WaitForSeconds(_breakTime);
         }

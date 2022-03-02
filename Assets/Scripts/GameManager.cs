@@ -11,9 +11,7 @@ public class GameManager : MonoBehaviour
     public enum PointerType
     {
         arrow, 
-        eye, 
-        coneEye, 
-        flatEye
+        eye
     }
     public PointerType pointerType; 
     public int CurrentSquare = 0; 
@@ -24,12 +22,13 @@ public class GameManager : MonoBehaviour
     public float TimeToMoveToSquare = 5f; 
     public float TimeToRecover = 5f; 
     public float BreakTime = 1f; 
+    public float StartTimeDelay = 5f; 
 
     [Header("Object References")]
     public FollowSequenceArrow[] Arrows = new FollowSequenceArrow[2]; 
-    public FollowSequenceEyes[] Eyes = new FollowSequenceEyes[2]; 
-    public DesignerEye[] flatEyes = new DesignerEye[2]; 
+    public DesignerEye[] Eyes = new DesignerEye[2]; 
     public float ArrowAngleMultiplier; 
+    public bool LookAtArmNullPos; 
 
     [Serializable]
     public struct Square
@@ -41,9 +40,12 @@ public class GameManager : MonoBehaviour
     public Square[] Squares = new Square[6]; 
     public Vector3 ArmNullPos = new Vector3(); 
     [SerializeField] private TextMeshProUGUI m_timerText; 
+    [SerializeField] private GameObject m_gameOverObjects; 
+
     private bool m_isStartTimerOver = false; 
     private float m_timer; 
     private bool m_initalMove = true; 
+    private bool m_gameOver = false; 
 
     private void Awake()
     {
@@ -64,20 +66,13 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        /// Roboter Ablauf: 
-        /// Start -> 5s Pause
-        /// Pro Bewegung: 
-        ///     -> 1s Pause ( auf null position )
-        ///     -> 5s Bewegung auf Ziel
-        ///     -> 5s Bewegung auf Null
-
         if(!m_isStartTimerOver)
             return; 
 
         m_timer += Time.deltaTime; 
 
         // Ensures that inital move takes a break of 5sec before starting to move
-        if(m_initalMove && m_timer >= 5f)
+        if(m_initalMove && m_timer >= StartTimeDelay)
         {
             m_initalMove = false; 
             m_timer = 1000f; 
@@ -101,44 +96,24 @@ public class GameManager : MonoBehaviour
                     {
                         if(arrow == null)
                             return; 
-                        int squareToShow = Sequence[CurrentSquare]; 
+                        int squareToShow = Sequence[CurrentSquare] - 1; // - 1 of Index, because Numbers should match Markis numbering in config file; 
                         arrow.StartCoroutine(arrow.Sequence(Squares[squareToShow])); 
                     }
                 break; 
                 case PointerType.eye: 
-                    for (int i = 0; i < 2; i++)
-                    {
-                        if(Eyes[i] == null)
-                            return; 
-                        int squareToShow = Sequence[CurrentSquare]; 
-                        Eyes[i].StartCoroutine(Eyes[i].Sequence(Squares[squareToShow])); 
-                    }
-                break; 
-                case PointerType.coneEye: 
-                    for (int i = 2; i < 4; i++)
-                    {
-                        if(Eyes[i] == null)
-                            return; 
-                        int squareToShow = Sequence[CurrentSquare]; 
-                        Eyes[i].StartCoroutine(Eyes[i].Sequence(Squares[squareToShow])); 
-                    }
-                break; 
-                case PointerType.flatEye: 
-                    foreach(DesignerEye eye in flatEyes)
+                    foreach(DesignerEye eye in Eyes)
                     {
                         if(eye == null)
                             return; 
-                        int squareToShow = Sequence[CurrentSquare]; 
+                        int squareToShow = Sequence[CurrentSquare] - 1; 
                         eye.StartCoroutine(eye.Sequence(Squares[squareToShow])); 
                     }
                 break; 
                 
             }
-
             CurrentSquare++;  
         }
     }
-
     private void SetActivePointerType()
     {
         switch (pointerType)
@@ -148,11 +123,7 @@ public class GameManager : MonoBehaviour
                 {
                     a.gameObject.SetActive(true); 
                 }
-                foreach(FollowSequenceEyes e in Eyes)
-                {
-                    e.gameObject.SetActive(false); 
-                }
-                foreach(DesignerEye e in flatEyes)
+                foreach(DesignerEye e in Eyes)
                 {
                     e.gameObject.SetActive(false); 
                 }
@@ -162,78 +133,36 @@ public class GameManager : MonoBehaviour
                 {
                     a.gameObject.SetActive(false); 
                 }
-                for (int i = 0; i < 4; i++)
-                {
-                    if(i < 2)
-                        Eyes[i].gameObject.SetActive(true); 
-                    else
-                        Eyes[i].gameObject.SetActive(false); 
-                }
-                foreach(DesignerEye e in flatEyes)
-                {
-                    e.gameObject.SetActive(false); 
-                }
-            break; 
-            case PointerType.coneEye: 
-                foreach(FollowSequenceArrow a in Arrows)
-                {
-                    a.gameObject.SetActive(false); 
-                }
-                for (int i = 0; i < 4; i++)
-                {
-                    if(i < 2)
-                        Eyes[i].gameObject.SetActive(false); 
-                    else
-                        Eyes[i].gameObject.SetActive(true); 
-                }
-                foreach(DesignerEye e in flatEyes)
-                {
-                    e.gameObject.SetActive(false); 
-                }
-            break; 
-            case PointerType.flatEye: 
-                foreach(FollowSequenceArrow a in Arrows)
-                {
-                    a.gameObject.SetActive(false); 
-                }
-                foreach(FollowSequenceEyes e in Eyes)
-                {
-                    e.gameObject.SetActive(false); 
-                }
-                foreach(DesignerEye e in flatEyes)
+                foreach(DesignerEye e in Eyes)
                 {
                     e.gameObject.SetActive(true); 
                 }
             break; 
         }
     }
-
     private void HideAllPointers()
     {
         foreach(FollowSequenceArrow a in Arrows)
         {
             a.gameObject.SetActive(false); 
         }
-        foreach(FollowSequenceEyes e in Eyes)
-        {
-            e.gameObject.SetActive(false); 
-        }
-        foreach(DesignerEye e in flatEyes)
+        foreach(DesignerEye e in Eyes)
         {
             e.gameObject.SetActive(false); 
         }
     }
     public void GameOver()
     {
-        
-        HideAllPointers(); 
-        m_timerText.gameObject.SetActive(true);
-        m_timerText.text ="Block 1 Finished!"; 
-        
-    
-        //LoadSceneByName(SceneManager.GetActiveScene().name); 
-    }
+        if(m_gameOver)
+            return; 
 
+        HideAllPointers(); 
+        m_gameOverObjects.SetActive(true); 
+        if(SaveManager.instance.gameObject != null)
+            Destroy(SaveManager.instance.gameObject); // Ensures that old settings Data is not loaded again
+        m_gameOver = true; 
+    }
+   
     /// <summary>
     /// Creates 3,2,1 Timer before game starts and sets active selected pointerType; 
     /// Length Determined by public StartTimerLength variable (in Seconds)
@@ -260,6 +189,10 @@ public class GameManager : MonoBehaviour
         SetActivePointerType(); 
     }
 
+    /// <summary>
+    /// Loads Settings from SaveManager; 
+    /// Called in Start(); 
+    /// </summary>
     public void LoadSettings(SaveManager.SettingsData data)
     {
         pointerType = data.PointerType; 
@@ -267,12 +200,13 @@ public class GameManager : MonoBehaviour
         TimeToMoveToSquare = data.TimeToMoveToSquare; 
         TimeToRecover = data.TimeToRecover; 
         BreakTime = data.BreakTime; 
+        StartTimeDelay = data.StartTimeDelay; 
 
         ArrowAngleMultiplier = data.ArrowAngleMultiplier; 
+        LookAtArmNullPos = data.LookAtArmNullPos; 
 
         for(int i = 0; i < Sequence.Count; i++)
         {
-            print("For Loop: " + i); 
             Sequence[i] = data.Sequence[i]; 
         }
 

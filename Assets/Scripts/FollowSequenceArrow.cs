@@ -10,6 +10,7 @@ public class FollowSequenceArrow : MonoBehaviour
     public bool IsLeftArrow; 
     private float _breakTime; 
     private float _timeToMoveToSquare; 
+    private float _arrowAngleMultiplier; 
 
     [Header("References")]
     public Sprite ArrowSprite; 
@@ -27,6 +28,7 @@ public class FollowSequenceArrow : MonoBehaviour
         // Get Relevant Variables from GameManager
         _breakTime = GameManager.instance.BreakTime; 
         _timeToMoveToSquare = GameManager.instance.TimeToMoveToSquare; 
+        _arrowAngleMultiplier = GameManager.instance.ArrowAngleMultiplier; 
     }
 
     public IEnumerator Sequence(GameManager.Square square)
@@ -52,18 +54,8 @@ public class FollowSequenceArrow : MonoBehaviour
         float zValue = ( Mathf.Abs(square.transform.position.z) < 1 ) ? 1 : Mathf.Abs(square.transform.position.z); 
         
         float ratio = 1 / zValue; 
-        print(ratio); 
-        // Bigger Angle if zValue == 1
-
 
         float angle = Vector3.Angle(Vector3.down, direction); 
-        /*
-        if(zValue == 1)
-            angle *= 1.5f;
-        else if(zValue > 1)
-            angle *= .75f; 
-        */
-        //print("Target Square: " + square.ID + "; Target Vector: " + direction + "; Angle: " + angle); 
 
         if(square.ID == 1 || square.ID == 2)
             angle = -angle; 
@@ -74,8 +66,8 @@ public class FollowSequenceArrow : MonoBehaviour
                 angle = -angle; 
         }
 
-        if(ratio >= 1)
-            angle = angle * (1 + ratio); 
+        if(ratio >= 1) // -> Square are close to Arrows
+            angle = angle * _arrowAngleMultiplier; 
         /*
         else
             angle = angle * (1 + ratio); 
