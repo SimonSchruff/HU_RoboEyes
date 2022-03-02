@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
     }
     public PointerType pointerType; 
     public int CurrentSquare = 0; 
-    public List<int> Sequence = new List<int>(5); 
+    public List<int> Sequence = new List<int>(10);
 
     [Header("Time Variables")]
     public float StartTimerLength = 5f; 
@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviour
     public FollowSequenceArrow[] Arrows = new FollowSequenceArrow[2]; 
     public FollowSequenceEyes[] Eyes = new FollowSequenceEyes[2]; 
     public DesignerEye[] flatEyes = new DesignerEye[2]; 
+    public float ArrowAngleMultiplier; 
 
     [Serializable]
     public struct Square
@@ -56,6 +57,10 @@ public class GameManager : MonoBehaviour
         StartCoroutine(StartTimer()); 
 
     }
+    private void Start()
+    {
+        LoadSettings(SaveManager.instance.settingsData); 
+    }
 
     private void Update()
     {
@@ -70,7 +75,7 @@ public class GameManager : MonoBehaviour
             return; 
 
         m_timer += Time.deltaTime; 
-        print(m_timer); 
+
         // Ensures that inital move takes a break of 5sec before starting to move
         if(m_initalMove && m_timer >= 5f)
         {
@@ -229,11 +234,6 @@ public class GameManager : MonoBehaviour
         //LoadSceneByName(SceneManager.GetActiveScene().name); 
     }
 
-    public void LoadSceneByName(string name)
-    {
-        SceneManager.LoadScene(name); 
-    }
-
     /// <summary>
     /// Creates 3,2,1 Timer before game starts and sets active selected pointerType; 
     /// Length Determined by public StartTimerLength variable (in Seconds)
@@ -256,6 +256,25 @@ public class GameManager : MonoBehaviour
 
         m_isStartTimerOver = true; 
         m_timerText.gameObject.SetActive(false); 
+        
         SetActivePointerType(); 
+    }
+
+    public void LoadSettings(SaveManager.SettingsData data)
+    {
+        pointerType = data.PointerType; 
+
+        TimeToMoveToSquare = data.TimeToMoveToSquare; 
+        TimeToRecover = data.TimeToRecover; 
+        BreakTime = data.BreakTime; 
+
+        ArrowAngleMultiplier = data.ArrowAngleMultiplier; 
+
+        for(int i = 0; i < Sequence.Count; i++)
+        {
+            print("For Loop: " + i); 
+            Sequence[i] = data.Sequence[i]; 
+        }
+
     }
 }
