@@ -10,6 +10,9 @@ public class SaveManager : MonoBehaviour
 
     public struct SettingsData
     {
+        public bool RecordScreen; 
+        public string FilePath; 
+        public string VideoName; 
         public float TimeToMoveToSquare; 
         public float TimeToRecover; 
         public float BreakTime; 
@@ -28,6 +31,9 @@ public class SaveManager : MonoBehaviour
     public TMP_Dropdown DD_PointerType; 
     public TMP_InputField IF_ArrowMulitplier; 
     public Toggle T_LookAtArm; 
+    public Toggle T_RecordScreen; 
+    public TMP_InputField IF_FilePath;
+    public TMP_InputField IF_VideoName;
     public TMP_InputField[] IF_Sequence = new TMP_InputField[10]; 
     public SliderHelperScript SequenceSlider; 
     private Slider _slider; 
@@ -66,12 +72,19 @@ public class SaveManager : MonoBehaviour
         settingsData.StartTimeDelay = float.Parse(IF_StartTimeDelay.text); 
 
         settingsData.ArrowAngleMultiplier = float.Parse(IF_ArrowMulitplier.text); 
+
+        settingsData.FilePath = IF_FilePath.text; 
+        settingsData.VideoName = IF_VideoName.text; 
         
         if(T_LookAtArm.isOn)
             settingsData.LookAtArmNullPos = true; 
         else
             settingsData.LookAtArmNullPos = false; 
 
+        if(T_RecordScreen.isOn)
+            settingsData.RecordScreen = true; 
+        else
+            settingsData.RecordScreen = false; 
         
         if(DD_PointerType.captionText.text == "Arrow")
         {

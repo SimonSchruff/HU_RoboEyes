@@ -5,14 +5,15 @@ using UnityEngine;
 public class MenuManager : MonoBehaviour
 {
     public GameObject Settings; 
-    public GameObject StartScreen; 
+    //public GameObject StartScreen; 
 
     private void Start() 
     {
         Settings.SetActive(true); 
-        StartScreen.SetActive(false); 
+       // StartScreen.SetActive(false); 
     }
 
+    /*
     public void LoadScreen(int i)
     {
         switch(i)
@@ -27,6 +28,7 @@ public class MenuManager : MonoBehaviour
             break; 
         }
     }
+    */
 
     public void Quit()
     {

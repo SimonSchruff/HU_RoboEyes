@@ -46,6 +46,7 @@ public class GameManager : MonoBehaviour
     private float m_timer; 
     private bool m_initalMove = true; 
     private bool m_gameOver = false; 
+    private bool m_recordScreen = false; 
 
     private void Awake()
     {
@@ -62,6 +63,12 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
        LoadSettings(SaveManager.instance.settingsData); 
+        // Turns on Screen Recording if selected in settings
+       if(m_recordScreen)
+       {
+            var folder = System.IO.Directory.CreateDirectory(SaveManager.instance.settingsData.FilePath + "/" + SaveManager.instance.settingsData.VideoName ); 
+            ScreenCapture.instance.ToggleIsRecording(); 
+       }
     }
 
     private void Update()
@@ -156,11 +163,17 @@ public class GameManager : MonoBehaviour
         if(m_gameOver)
             return; 
 
+        if(m_recordScreen)
+            ScreenCapture.instance.ToggleIsRecording(); // Turns of Screen Recording
+
         HideAllPointers(); 
         m_gameOverObjects.SetActive(true); 
+
         if(SaveManager.instance.gameObject != null)
             Destroy(SaveManager.instance.gameObject); // Ensures that old settings Data is not loaded again
         m_gameOver = true; 
+
+        
     }
    
     /// <summary>
@@ -204,6 +217,10 @@ public class GameManager : MonoBehaviour
 
         ArrowAngleMultiplier = data.ArrowAngleMultiplier; 
         LookAtArmNullPos = data.LookAtArmNullPos; 
+
+        m_recordScreen = data.RecordScreen; 
+        ScreenCapture.instance.FilePath = data.FilePath;
+        ScreenCapture.instance.VideoName = data.VideoName;
 
         Sequence = new List<int>(); 
         for(int i = 0; i < data.Sequence.Length; i++)
