@@ -35,6 +35,7 @@ public class ScreenCapture : MonoBehaviour
 
     private void Start() 
     {
+        
         Application.targetFrameRate = TargetFPS; 
 
         _width = Screen.width;
@@ -51,7 +52,6 @@ public class ScreenCapture : MonoBehaviour
         _filePath = Application.dataPath + "/Video-" + _day + "." + _month + "_" + _hour + "-" + _minute;  
         // Application.dataPath + "/Video-"; 
         */
-        // returns a DirectoryInfo object
     }
 
     private void Update()
