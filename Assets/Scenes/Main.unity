@@ -772,7 +772,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  LookAtArmNullPos: 1
   BackgroundCircle: {fileID: 1903455424}
   Circle: {fileID: 884768926}
   Pupil: {fileID: 1094803411}
@@ -2272,7 +2271,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  LookAtArmNullPos: 1
   BackgroundCircle: {fileID: 2000224120}
   Circle: {fileID: 492138724}
   Pupil: {fileID: 1437579995}
@@ -2501,20 +2499,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bc549caafc4843ae9be40c05269b0af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pointerType: 3
+  pointerType: 0
   CurrentSquare: 0
-  Sequence: 01000000020000000300000004000000050000000600000004000000050000000300000005000000
+  Sequence: 010000000200000003000000040000000500000006000000
   StartTimerLength: 5
   TimeToMoveToSquare: 5
   TimeToRecover: 5
   BreakTime: 1
+  StartTimeDelay: 5
   Arrows:
   - {fileID: 1824005363}
   - {fileID: 1463181190}
   Eyes:
   - {fileID: 268280877}
   - {fileID: 755924155}
-  ArrowAngleMultiplier: 0
+  ArrowAngleMultiplier: 2
+  LookAtArmNullPos: 0
   Squares:
   - ID: 1
     transform: {fileID: 223472629}

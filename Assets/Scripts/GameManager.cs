@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
     }
     public PointerType pointerType; 
     public int CurrentSquare = 0; 
-    public List<int> Sequence = new List<int>(10);
+    public List<int> Sequence; 
 
     [Header("Time Variables")]
     public float StartTimerLength = 5f; 
@@ -61,7 +61,7 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
-        LoadSettings(SaveManager.instance.settingsData); 
+       LoadSettings(SaveManager.instance.settingsData); 
     }
 
     private void Update()
@@ -205,9 +205,10 @@ public class GameManager : MonoBehaviour
         ArrowAngleMultiplier = data.ArrowAngleMultiplier; 
         LookAtArmNullPos = data.LookAtArmNullPos; 
 
-        for(int i = 0; i < Sequence.Count; i++)
+        Sequence = new List<int>(); 
+        for(int i = 0; i < data.Sequence.Length; i++)
         {
-            Sequence[i] = data.Sequence[i]; 
+            Sequence.Add(data.Sequence[i]); 
         }
 
     }
